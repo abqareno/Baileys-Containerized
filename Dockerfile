@@ -34,7 +34,7 @@ COPY .prettierignore ./
 
 # Install all dependencies (including dev dependencies for build)
 # The prepare script will run automatically and build the project
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy remaining application files
 COPY . .
@@ -61,7 +61,7 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
 
 # Install production dependencies only
-RUN yarn install --production --frozen-lockfile
+RUN yarn workspaces focus --all --production
 
 # Copy built application from builder stage
 COPY --from=builder /app/lib ./lib

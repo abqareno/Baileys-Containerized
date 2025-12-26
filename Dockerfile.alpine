@@ -28,7 +28,7 @@ COPY .prettierignore ./
 
 # Install dependencies
 # The prepare script will run automatically and build the project
-RUN yarn install --frozen-lockfile
+RUN yarn install --immutable
 
 # Copy remaining application files
 COPY . .
