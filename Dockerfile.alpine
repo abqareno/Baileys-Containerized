@@ -33,6 +33,9 @@ RUN yarn install --frozen-lockfile
 # Copy remaining application files
 COPY . .
 
+# Explicitly build the application to ensure lib directory is created
+RUN yarn build
+
 # Create directory for auth data persistence
 RUN mkdir -p /app/baileys_auth_info
 

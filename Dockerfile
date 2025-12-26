@@ -39,6 +39,9 @@ RUN yarn install --frozen-lockfile
 # Copy remaining application files
 COPY . .
 
+# Explicitly build the application to ensure lib directory is created
+RUN yarn build
+
 # Stage 2: Production stage
 FROM node:20-slim
 
