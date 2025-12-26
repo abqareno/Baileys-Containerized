@@ -108,7 +108,10 @@ The following directories are mounted as volumes for data persistence:
 - `./baileys_auth_info`: WhatsApp authentication session data
 - `./logs`: Application logs
 
-**Important**: Don't delete `baileys_auth_info` folder if you want to keep your session active!
+**Important Notes:**
+- Don't delete `baileys_auth_info` folder if you want to keep your session active!
+- These directories will be created automatically by Docker Compose on first run
+- On Linux, ensure proper permissions: `chmod 755 baileys_auth_info logs` if needed
 
 ## Common Docker Commands
 

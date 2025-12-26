@@ -3,6 +3,7 @@
 ## Prerequisites
 - Docker Desktop (macOS/Windows) or Docker Engine (Linux)
 - At least 2GB free disk space
+- **Linux users**: Ensure the build script is executable: `chmod +x verify-build.sh`
 
 ## Quick Start (3 steps)
 

@@ -9,9 +9,9 @@ services:
       # Expose port 3000 for potential API access
       - "3000:3000"
     volumes:
-      # Persist authentication data
+      # Persist authentication data (directory created automatically)
       - ./baileys_auth_info:/app/baileys_auth_info
-      # Persist logs
+      # Persist logs (directory created automatically)
       - ./logs:/app/logs
       # Optional: mount custom example script
       # - ./Example:/app/Example
