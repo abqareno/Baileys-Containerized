@@ -1,29 +1,58 @@
-# Use Node.js LTS version
-FROM node:20-alpine
+# Multi-stage build for smaller final image
+# Stage 1: Build stage
+FROM node:20-slim AS builder
 
 # Install necessary build tools for native dependencies
-RUN apk add --no-cache \
+RUN apt-get update && \
+    apt-get install -y \
     python3 \
     make \
     g++ \
     git \
-    curl
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Update CA certificates and enable Corepack for Yarn 4
+RUN update-ca-certificates && corepack enable
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files for dependency installation
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
 
-# Install dependencies
-RUN yarn install --immutable
+# Install dependencies (corepack will auto-download the right yarn version)
+RUN yarn install --frozen-lockfile
 
 # Copy application source
 COPY . .
 
 # Build the application
 RUN yarn build
+
+# Stage 2: Production stage
+FROM node:20-slim
+
+# Install runtime dependencies only
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Enable Corepack for Yarn 4
+RUN update-ca-certificates && corepack enable
+
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/WAProto ./WAProto
+COPY --from=builder /app/Example ./Example
+COPY --from=builder /app/engine-requirements.js ./
 
 # Create directory for auth data persistence
 RUN mkdir -p /app/baileys_auth_info
