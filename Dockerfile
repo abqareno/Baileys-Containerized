@@ -22,7 +22,7 @@ WORKDIR /app
 # Copy package files for dependency installation
 COPY package.json yarn.lock .yarnrc.yml ./
 
-# Install dependencies (corepack will auto-download the right yarn version)
+# Install all dependencies (including dev dependencies for build)
 RUN yarn install --frozen-lockfile
 
 # Copy application source
@@ -46,9 +46,13 @@ RUN update-ca-certificates && corepack enable
 
 WORKDIR /app
 
-# Copy built application from builder stage
+# Copy package files
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
-COPY --from=builder /app/node_modules ./node_modules
+
+# Install production dependencies only
+RUN yarn install --production --frozen-lockfile
+
+# Copy built application from builder stage
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/WAProto ./WAProto
 COPY --from=builder /app/Example ./Example

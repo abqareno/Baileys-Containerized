@@ -395,8 +395,9 @@ act -j docker-build
 
 1. **Build Phase**:
    - No build errors
-   - Image created (~500MB for Debian, ~400MB for Alpine)
+   - Image created (~450-500MB for Debian, ~350-400MB for Alpine)
    - All dependencies installed
+   - Production-only dependencies in final stage
 
 2. **Runtime Phase**:
    - Container starts successfully

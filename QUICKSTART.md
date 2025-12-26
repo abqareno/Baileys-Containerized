@@ -41,9 +41,22 @@ Look for the QR code in the logs and scan it with WhatsApp on your phone:
 
 ## Using Pairing Code Instead
 
-Edit `docker-compose.yml` and change the command line:
-```yaml
-command: yarn example --use-pairing-code
+Create/edit `.env` file and set:
+```bash
+USE_PAIRING_CODE=true
+```
+
+Then restart:
+```bash
+docker compose restart
+docker compose logs -f baileys
+```
+
+## Enable Auto-Replies
+
+Edit `.env` file and set:
+```bash
+DO_REPLIES=true
 ```
 
 Then restart:
