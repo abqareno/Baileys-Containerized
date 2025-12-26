@@ -45,3 +45,38 @@ Modified both `Dockerfile` and `Dockerfile.alpine` to copy necessary source file
 
 ## Commits
 - d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
+
+---
+
+## Second Build Issue (Fixed)
+
+### Issue
+After fixing the first issue, the Docker build failed at the production stage with:
+```
+COPY --from=builder /app/lib ./lib
+ERROR: "/app/lib": not found
+```
+
+### Root Cause
+While the `prepare` script in package.json runs during `yarn install` and attempts to build the project, it may not complete successfully or reliably in all scenarios. The multi-stage Dockerfile tried to copy `/app/lib` from the builder stage, but that directory didn't exist.
+
+### Solution
+Added an explicit `RUN yarn build` step after copying all source files to ensure the TypeScript compilation completes and the `lib` directory is created:
+
+**Updated Build Order:**
+1. Copy package.json, yarn.lock, .yarnrc.yml
+2. Copy source files (src/, WAProto/, config files)
+3. Run `yarn install` (prepare script may run)
+4. Copy remaining files
+5. **Run `yarn build` explicitly (NEW)** ← Ensures lib/ is created
+6. Continue with production stage
+
+### Impact
+- ✅ Docker build now succeeds completely
+- ✅ `/app/lib` directory is guaranteed to exist
+- ✅ Production stage can copy built files successfully
+- ✅ CI/CD workflow passes
+
+### Commits
+- d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
+- f031c70: Fix Docker build: add explicit yarn build step to ensure lib directory is created
