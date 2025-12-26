@@ -120,3 +120,49 @@ The `yarn workspaces focus --all --production` command installs only production 
 - d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
 - f031c70: Fix Docker build: add explicit yarn build step to ensure lib directory is created
 - 9cfc42e: Fix Yarn 4 deprecated flags: use --immutable and workspaces focus --production
+
+---
+
+## Fourth Build Issue (Fixed)
+
+### Issue
+After updating to Yarn 4 compatible syntax, the production stage build failed with:
+```
+➤ YN0007: │ baileys@workspace:. must be built because it never has been before or the last one failed
+➤ YN0009: │ baileys@workspace:. couldn't be built successfully (exit code 1)
+ERROR: exit code: 1
+```
+
+### Root Cause
+The `yarn workspaces focus --all --production` command was running the `prepare` script from package.json, which attempts to build the TypeScript source. However, in the production stage:
+1. We only copy package.json, yarn.lock, and .yarnrc.yml
+2. We run `yarn workspaces focus --all --production`
+3. The prepare script tries to run `npm run build`
+4. Build fails because source files (src/, tsconfig.json, etc.) aren't copied yet
+5. We copy built files (lib/) from the builder stage AFTER the install
+
+The prepare script should only run in the builder stage where we have source files, not in the production stage.
+
+### Solution
+Added the `--mode=skip-build` flag to the `yarn workspaces focus` command in the production stage:
+
+```dockerfile
+RUN yarn workspaces focus --all --production --mode=skip-build
+```
+
+This flag tells Yarn to skip running build scripts (including prepare, preinstall, postinstall) during the dependency installation, which is appropriate for the production stage since:
+- We're only installing runtime dependencies
+- We're copying pre-built files from the builder stage
+- We don't need to build anything in production
+
+### Impact
+- ✅ Production dependencies install successfully
+- ✅ No build scripts run in production stage
+- ✅ Built files copied from builder stage work correctly
+- ✅ CI/CD workflow passes
+
+### Commits
+- d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
+- f031c70: Fix Docker build: add explicit yarn build step to ensure lib directory is created
+- 9cfc42e: Fix Yarn 4 deprecated flags: use --immutable and workspaces focus --production
+- e7c8864: Fix production install: skip build scripts with --mode=skip-build flag
