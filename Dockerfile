@@ -22,14 +22,22 @@ WORKDIR /app
 # Copy package files for dependency installation
 COPY package.json yarn.lock .yarnrc.yml ./
 
+# Copy source files needed for the build (required by prepare script)
+COPY src ./src
+COPY WAProto ./WAProto
+COPY tsconfig.json ./
+COPY tsconfig.build.json ./
+COPY engine-requirements.js ./
+COPY eslint.config.mts ./
+COPY .prettierrc ./
+COPY .prettierignore ./
+
 # Install all dependencies (including dev dependencies for build)
+# The prepare script will run automatically and build the project
 RUN yarn install --frozen-lockfile
 
-# Copy application source
+# Copy remaining application files
 COPY . .
-
-# Build the application
-RUN yarn build
 
 # Stage 2: Production stage
 FROM node:20-slim
