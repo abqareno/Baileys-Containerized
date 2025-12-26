@@ -49,15 +49,17 @@ Run Baileys in a Docker container for easy deployment and cross-platform compati
 
 ```bash
 # Quick start with Docker Compose
-docker-compose up -d
+docker compose up -d
 
 # View logs and scan QR code
-docker-compose logs -f baileys
+docker compose logs -f baileys
 ```
 
-📖 **For detailed Docker instructions**, see [DOCKER.md](DOCKER.md)
+📖 **Documentation:**
+- **Quick Start**: [QUICKSTART.md](QUICKSTART.md) - Get running in 3 steps
+- **Full Guide**: [DOCKER.md](DOCKER.md) - Complete Docker documentation
 
-Docker setup works on:
+**Cross-platform support:**
 - ✅ macOS (Docker Desktop)
 - ✅ Windows (Docker Desktop)
 - ✅ Ubuntu/Linux (Docker Engine)
@@ -73,8 +75,14 @@ The script covers most common use cases.
 3. ``` yarn example ```
 
 ### Run with Docker
-1. ``` docker-compose up -d ```
-2. ``` docker-compose logs -f baileys ```
+1. ``` docker compose build ```
+2. ``` docker compose up -d ```
+3. ``` docker compose logs -f baileys ```
+
+Or using Makefile:
+```bash
+make build && make up && make logs
+```
 
 ## Install
 

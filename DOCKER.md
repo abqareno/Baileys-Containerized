@@ -22,10 +22,10 @@ cd Baileys-Containerized
 
 ```bash
 # Build and start the container
-docker-compose up -d
+docker compose up -d
 
 # View logs and QR code
-docker-compose logs -f baileys
+docker compose logs -f baileys
 ```
 
 ### 3. Scan QR Code
@@ -41,13 +41,13 @@ When the container starts, it will display a QR code in the logs. Scan this QR c
 If you prefer using a pairing code instead of QR:
 
 ```bash
-# Edit docker-compose.yml and uncomment the pairing code command line
+# Edit docker compose.yml and uncomment the pairing code command line
 # Then restart the container
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 
 # View logs to see the pairing code
-docker-compose logs -f baileys
+docker compose logs -f baileys
 ```
 
 ## Platform-Specific Instructions
@@ -57,8 +57,8 @@ docker-compose logs -f baileys
 ```bash
 # Install Docker Desktop from https://www.docker.com/products/docker-desktop
 # Then run:
-docker-compose up -d
-docker-compose logs -f
+docker compose up -d
+docker compose logs -f
 ```
 
 ### Windows (Docker Desktop)
@@ -66,8 +66,8 @@ docker-compose logs -f
 ```bash
 # Install Docker Desktop from https://www.docker.com/products/docker-desktop
 # Then run in PowerShell or CMD:
-docker-compose up -d
-docker-compose logs -f
+docker compose up -d
+docker compose logs -f
 ```
 
 ### Ubuntu/Linux
@@ -75,7 +75,7 @@ docker-compose logs -f
 ```bash
 # Install Docker and Docker Compose
 sudo apt-get update
-sudo apt-get install docker.io docker-compose
+sudo apt-get install docker.io docker compose
 sudo systemctl start docker
 sudo systemctl enable docker
 
@@ -84,8 +84,8 @@ sudo usermod -aG docker $USER
 newgrp docker
 
 # Run the application
-docker-compose up -d
-docker-compose logs -f
+docker compose up -d
+docker compose logs -f
 ```
 
 ## Configuration
@@ -114,27 +114,27 @@ The following directories are mounted as volumes for data persistence:
 
 ```bash
 # Start the container
-docker-compose up -d
+docker compose up -d
 
 # Stop the container
-docker-compose down
+docker compose down
 
 # View logs
-docker-compose logs -f baileys
+docker compose logs -f baileys
 
 # Restart the container
-docker-compose restart
+docker compose restart
 
 # Rebuild the container (after code changes)
-docker-compose up -d --build
+docker compose up -d --build
 
 # Access container shell
-docker-compose exec baileys sh
+docker compose exec baileys sh
 
 # Remove all data and start fresh
-docker-compose down -v
+docker compose down -v
 rm -rf baileys_auth_info logs
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Accessing the Application
@@ -149,18 +149,18 @@ To access from host machine: `http://localhost:3000`
 ## Troubleshooting
 
 ### Container exits immediately
-Check logs: `docker-compose logs baileys`
+Check logs: `docker compose logs baileys`
 
 ### QR code not appearing
-Make sure you have `tty: true` and `stdin_open: true` in docker-compose.yml
+Make sure you have `tty: true` and `stdin_open: true` in docker compose.yml
 
 ### Authentication issues
-1. Stop container: `docker-compose down`
+1. Stop container: `docker compose down`
 2. Remove auth data: `rm -rf baileys_auth_info`
-3. Start fresh: `docker-compose up -d`
+3. Start fresh: `docker compose up -d`
 
 ### Port already in use
-Change the port mapping in `docker-compose.yml`:
+Change the port mapping in `docker compose.yml`:
 ```yaml
 ports:
   - "3001:3000"  # Use 3001 on host instead of 3000
@@ -177,13 +177,13 @@ sudo chown -R $USER:$USER baileys_auth_info logs
 To run in development mode with live code reloading:
 
 ```bash
-# Modify docker-compose.yml to mount source code
+# Modify docker compose.yml to mount source code
 # Add under volumes:
 # - ./src:/app/src
 # - ./Example:/app/Example
 
 # Then run
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ## Building Custom Images
@@ -205,7 +205,7 @@ docker run -it --rm \
 1. **Never commit** `baileys_auth_info` folder to version control
 2. **Keep** `.env` file private and don't share credentials
 3. **Use** network isolation in production
-4. **Update** dependencies regularly: `docker-compose build --no-cache`
+4. **Update** dependencies regularly: `docker compose build --no-cache`
 
 ## Architecture
 
