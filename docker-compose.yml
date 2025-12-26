@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  baileys:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baileys-whatsapp
+    restart: unless-stopped
+    ports:
+      # Expose port 3000 for potential API access
+      - "3000:3000"
+    volumes:
+      # Persist authentication data
+      - ./baileys_auth_info:/app/baileys_auth_info
+      # Persist logs
+      - ./logs:/app/logs
+      # Optional: mount custom example script
+      # - ./Example:/app/Example
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+    stdin_open: true  # Keep STDIN open (for interactive QR/pairing code)
+    tty: true         # Allocate a pseudo-TTY
+    command: yarn example
+    # Uncomment below to use pairing code instead of QR
+    # command: yarn example --use-pairing-code
+    # Uncomment below to enable auto-replies
+    # command: yarn example --do-reply
+
+networks:
+  default:
+    name: baileys-network

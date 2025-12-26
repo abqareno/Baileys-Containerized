@@ -1,0 +1,64 @@
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.yarn/cache
+.yarn/install-state.gz
+
+# Build outputs
+lib
+dist
+build
+*.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Auth and data files
+baileys_auth_info*
+auth_info*.json
+baileys_store*.json
+wa-logs.txt
+logs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+docs
+*.md
+!README.md
+
+# CI/CD
+.github
+
+# Test files
+test.ts
+TestData
+
+# Misc
+Proxy
+output.csv
+decoded-ws.json
+browser-messages.json
+browser-token.json
+messages*.json

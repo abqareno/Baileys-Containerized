@@ -19,3 +19,7 @@ test.ts
 TestData
 wa-logs.txt
 coverage
+
+# Docker
+logs/
+*.log
