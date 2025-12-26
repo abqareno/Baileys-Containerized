@@ -80,3 +80,43 @@ Added an explicit `RUN yarn build` step after copying all source files to ensure
 ### Commits
 - d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
 - f031c70: Fix Docker build: add explicit yarn build step to ensure lib directory is created
+
+---
+
+## Third Build Issue (Fixed)
+
+### Issue
+After the previous fixes, the Docker build failed during production dependency installation with:
+```
+➤ YN0050: The --production option is deprecated on 'install'; use 'yarn workspaces focus' instead
+➤ YN0050: The --frozen-lockfile option is deprecated; use --immutable and/or --immutable-cache instead
+ERROR: exit code: 1
+```
+
+### Root Cause
+Yarn 4 (Berry) deprecated several command-line flags that were used in Yarn 1.x:
+- `--frozen-lockfile` is deprecated in favor of `--immutable`
+- `--production` flag on `yarn install` is deprecated in favor of `yarn workspaces focus --production`
+
+The Dockerfiles were using the old Yarn 1.x syntax, which Yarn 4 treats as an error.
+
+### Solution
+Updated both Dockerfiles to use Yarn 4 compatible commands:
+
+**Changes:**
+1. **Builder stage**: `yarn install --frozen-lockfile` → `yarn install --immutable`
+2. **Production stage**: `yarn install --production --frozen-lockfile` → `yarn workspaces focus --all --production`
+
+The `--immutable` flag ensures the lockfile is not modified (similar to `--frozen-lockfile`).
+The `yarn workspaces focus --all --production` command installs only production dependencies.
+
+### Impact
+- ✅ Docker build now uses Yarn 4 compatible syntax
+- ✅ No deprecation warnings
+- ✅ Proper production dependency installation
+- ✅ CI/CD workflow passes
+
+### Commits
+- d9c7b66: Fix Docker build: copy source files before yarn install to satisfy prepare script
+- f031c70: Fix Docker build: add explicit yarn build step to ensure lib directory is created
+- 9cfc42e: Fix Yarn 4 deprecated flags: use --immutable and workspaces focus --production
