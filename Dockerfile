@@ -61,7 +61,8 @@ WORKDIR /app
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
 
 # Install production dependencies only
-RUN yarn workspaces focus --all --production
+# Use --mode=skip-build to avoid running the prepare script
+RUN yarn workspaces focus --all --production --mode=skip-build
 
 # Copy built application from builder stage
 COPY --from=builder /app/lib ./lib
