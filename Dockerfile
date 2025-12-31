@@ -42,6 +42,10 @@ COPY . .
 # Explicitly build the application to ensure lib directory is created
 RUN yarn build
 
+# Prune dev dependencies to keep the image small
+# We use YARN_ENABLE_SCRIPTS=0 to avoid running the prepare script again
+RUN YARN_ENABLE_SCRIPTS=0 yarn workspaces focus --all --production
+
 # Stage 2: Production stage
 FROM node:20-slim
 
@@ -57,15 +61,13 @@ RUN update-ca-certificates && corepack enable
 
 WORKDIR /app
 
-# Copy package files
+# Copy package files and node_modules from builder
 COPY --from=builder /app/package.json /app/yarn.lock /app/.yarnrc.yml ./
-
-# Install production dependencies only
-# Use --mode=skip-build to avoid running the prepare script
-RUN yarn workspaces focus --all --production --mode=skip-build
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy built application from builder stage
 COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/src ./src
 COPY --from=builder /app/WAProto ./WAProto
 COPY --from=builder /app/Example ./Example
 COPY --from=builder /app/engine-requirements.js ./
@@ -80,4 +82,5 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Run the example application by default
-CMD ["yarn", "example"]
+# Using direct path to tsx to avoid yarn/corepack overhead in production
+CMD ["./node_modules/.bin/tsx", "Example/example.ts"]
