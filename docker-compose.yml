@@ -1,0 +1,43 @@
+services:
+  baileys:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baileys-whatsapp
+    restart: unless-stopped
+    ports:
+      # Expose port 3000 for potential API access
+      - "3700:3000"
+    volumes:
+      # Persist authentication data (directory created automatically)
+      - ./baileys_auth_info:/app/baileys_auth_info
+      # Persist logs (directory created automatically)
+      - ./logs:/app/logs
+      # Optional: mount custom example script
+      # - ./Example:/app/Example
+    environment:
+      - NODE_ENV=production
+      - TZ=UTC
+      # Set to "true" to use pairing code instead of QR
+      - USE_PAIRING_CODE=${USE_PAIRING_CODE:-false}
+      # Set to "true" to enable auto-replies
+      - DO_REPLIES=${DO_REPLIES:-false}
+    stdin_open: true  # Keep STDIN open (for interactive QR/pairing code)
+    tty: true         # Allocate a pseudo-TTY
+    # Command with environment variable support
+    command: >
+      sh -c "
+      if [ \"$$USE_PAIRING_CODE\" = \"true\" ] && [ \"$$DO_REPLIES\" = \"true\" ]; then
+        yarn example --use-pairing-code --do-reply
+      elif [ \"$$USE_PAIRING_CODE\" = \"true\" ]; then
+        yarn example --use-pairing-code
+      elif [ \"$$DO_REPLIES\" = \"true\" ]; then
+        yarn example --do-reply
+      else
+        yarn example
+      fi
+      "
+
+networks:
+  default:
+    name: baileys-network

@@ -43,14 +43,46 @@ Use at your own discretion. Do not spam people with this. We discourage any stal
 This is the only official repository and is maintained by the community.
 > **Join the Discord [here](https://discord.gg/WeJM5FP9GG)**
 
+## 🐳 Docker Setup (Recommended)
+
+Run Baileys in a Docker container for easy deployment and cross-platform compatibility:
+
+```bash
+# Quick start with Docker Compose
+docker compose up -d
+
+# View logs and scan QR code
+docker compose logs -f baileys
+```
+
+📖 **Documentation:**
+- **Quick Start**: [QUICKSTART.md](QUICKSTART.md) - Get running in 3 steps
+- **Full Guide**: [DOCKER.md](DOCKER.md) - Complete Docker documentation
+
+**Cross-platform support:**
+- ✅ macOS (Docker Desktop)
+- ✅ Windows (Docker Desktop)
+- ✅ Ubuntu/Linux (Docker Engine)
+
 ## Example
 
 Do check out & run [example.ts](Example/example.ts) to see an example usage of the library.
 The script covers most common use cases.
-To run the example script, download or clone the repo and then type the following in a terminal:
+
+### Run Locally (without Docker)
 1. ``` cd path/to/Baileys ```
 2. ``` yarn ```
 3. ``` yarn example ```
+
+### Run with Docker
+1. ``` docker compose build ```
+2. ``` docker compose up -d ```
+3. ``` docker compose logs -f baileys ```
+
+Or using Makefile:
+```bash
+make build && make up && make logs
+```
 
 ## Install
 

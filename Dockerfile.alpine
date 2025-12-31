@@ -1,0 +1,49 @@
+# Use Node.js LTS version
+FROM node:20-alpine
+
+# Install necessary build tools for native dependencies (libsignal needs compilation)
+# Using multiple RUN commands to better handle failures and caching
+RUN apk update && \
+    apk add --no-cache python3 make g++ git curl ca-certificates || \
+    (sleep 5 && apk add --no-cache python3 make g++ git curl ca-certificates)
+
+# Update CA certificates and enable Corepack for Yarn 4
+RUN update-ca-certificates && corepack enable
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package.json yarn.lock .yarnrc.yml ./
+
+# Copy source files needed for the build (required by prepare script)
+COPY src ./src
+COPY WAProto ./WAProto
+COPY tsconfig.json ./
+COPY tsconfig.build.json ./
+COPY engine-requirements.js ./
+COPY eslint.config.mts ./
+COPY .prettierrc ./
+COPY .prettierignore ./
+
+# Install dependencies
+# The prepare script will run automatically and build the project
+RUN yarn install --immutable
+
+# Copy remaining application files
+COPY . .
+
+# Explicitly build the application to ensure lib directory is created
+RUN yarn build
+
+# Create directory for auth data persistence
+RUN mkdir -p /app/baileys_auth_info
+
+# Expose port for API (if needed in future)
+EXPOSE 3000
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Run the example application by default
+CMD ["yarn", "example"]
